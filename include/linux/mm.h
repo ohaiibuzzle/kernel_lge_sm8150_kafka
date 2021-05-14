@@ -2889,7 +2889,8 @@ static inline void setup_nr_node_ids(void) {}
 #endif
 
 extern int want_old_faultaround_pte;
-#ifdef CONFIG_PROCESS_RECLAIM
+
+#if defined(CONFIG_PROCESS_RECLAIM) || defined(CONFIG_PRLMK)
 struct reclaim_param {
 	struct vm_area_struct *vma;
 	/* Number of pages scanned */
