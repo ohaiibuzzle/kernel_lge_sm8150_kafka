@@ -49,6 +49,8 @@ jobs:
           submodules: recursive
 
       - name: Build kernel
+        id: kernel-build
+        continue-on-error: true
         run: |
           export PATH="$(pwd)/clang/bin:$(pwd)/clang/aarch64-linux-gnu/bin:$(pwd)/clang/arm-linux-gnueabi/bin:$PATH"
           cd kernel
@@ -56,8 +58,13 @@ jobs:
           sed -i 's/CONFIG_CC_WERROR=y/CONFIG_CC_WERROR=n/g' out/.config
           yes "" | make ARCH=arm64 O=out CC=clang LD=ld.lld CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CLANG_TRIPLE=aarch64-linux-gnu- oldconfig
           make -j$(nproc --all) ARCH=arm64 O=out CC=clang LD=ld.lld CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CLANG_TRIPLE=aarch64-linux-gnu- 2>&1 | tee build.log
+
+      - name: Setup tmate session for debugging
+        uses: mxschmitt/action-tmate@v3
+        if: steps.kernel-build.conclusion != 'success'
       
       - name: Upload build artifacts
+        if: steps.kernel-build.conclusion == 'success'
         uses: actions/upload-artifact@v3
         with:
           name: kernel-${{ matrix.variants }}
@@ -68,6 +75,3 @@ jobs:
         with:
           name: build-log-${{ matrix.variants }}
           path: kernel/build.log
-          
-      - name: Setup tmate session for debugging
-        uses: mxschmitt/action-tmate@v3
