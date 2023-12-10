@@ -5602,6 +5602,12 @@ CONFIG_TRUSTONIC_TEE_LPAE=y
 # CONFIG_TRUSTONIC_TRUSTED_UI is not set
 
 #
+# KernelSU
+#
+CONFIG_KSU=y
+# CONFIG_KSU_DEBUG is not set
+
+#
 # Firmware Drivers
 #
 CONFIG_ARM_PSCI_FW=y
